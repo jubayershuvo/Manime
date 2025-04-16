@@ -1,6 +1,7 @@
 import axios from "axios";
+import * as cheerio from "cheerio";
 
-async function getMovieDetails(imdbId: string) {
+export async function getMovieDetails(imdbId: string) {
   const baseUrl = "https://www.imdb.com/title";
   try {
     const response = await axios.get(`${baseUrl}/${imdbId}`, {
@@ -13,7 +14,6 @@ async function getMovieDetails(imdbId: string) {
     const scriptMatch = response.data.match(
       /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/
     );
-    
 
     if (!scriptMatch) {
       throw new Error("Movie details JSON not found");
@@ -23,7 +23,6 @@ async function getMovieDetails(imdbId: string) {
     const aboveTheFoldData = jsonData.props.pageProps.aboveTheFoldData;
     const mainColumnData = jsonData.props.pageProps.mainColumnData;
 
-  
     return {
       // Basic Info
       id: imdbId,
@@ -45,7 +44,7 @@ async function getMovieDetails(imdbId: string) {
           dimensions: { width: edge.node.width, height: edge.node.height },
         })) || [],
       videos:
-        aboveTheFoldData.primaryVideos?.edges?.map((edge : any) => ({
+        aboveTheFoldData.primaryVideos?.edges?.map((edge: any) => ({
           id: edge.node.id,
           name: edge.node.name?.text,
           runtime: edge.node.runtime?.value,
@@ -89,16 +88,18 @@ async function getMovieDetails(imdbId: string) {
       producers:
         mainColumnData.production?.edges
           ?.filter((edge: any) => edge.node.category?.text === "Producer")
-          ?.map((edge:  any) => ({
+          ?.map((edge: any) => ({
             id: edge.node.name.id,
             name: edge.node.name.nameText.text,
           })) || [],
       directors:
-        aboveTheFoldData.directorsPageTitle?.[0]?.credits?.map((person: any) => ({
-          id: person.name.id,
-          name: person.name.nameText.text,
-          image: person.name.primaryImage?.url,
-        })) || [],
+        aboveTheFoldData.directorsPageTitle?.[0]?.credits?.map(
+          (person: any) => ({
+            id: person.name.id,
+            name: person.name.nameText.text,
+            image: person.name.primaryImage?.url,
+          })
+        ) || [],
       writers:
         aboveTheFoldData.writers?.map((writer: any) => ({
           id: writer.name.id,
@@ -201,7 +202,8 @@ async function getMovieDetails(imdbId: string) {
       // Additional Content
       genres: aboveTheFoldData.genres?.genres?.map((g: any) => g.text) || [],
       keywords:
-        aboveTheFoldData.keywords?.edges?.map((edge: any) => edge.node.text) || [],
+        aboveTheFoldData.keywords?.edges?.map((edge: any) => edge.node.text) ||
+        [],
       similarTitles:
         mainColumnData.moreLikeThisTitles?.edges?.map((edge: any) => ({
           id: edge.node.id,
@@ -253,4 +255,66 @@ async function getMovieDetails(imdbId: string) {
   }
 }
 
-export default getMovieDetails;
+export async function searchMovies(title: string) {
+  if (!title) return { error: "Missing title query parameter" };
+
+  try {
+    const url = `https://www.imdb.com/find?q=${encodeURIComponent(title)}&s=tt`;
+
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        Accept: "text/html",
+      },
+    });
+
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    // Blocked by CAPTCHA check
+    if (
+      html.includes("captcha") ||
+      $("title").text().toLowerCase().includes("attention required")
+    ) {
+      return { error: "Blocked by IMDb CAPTCHA" };
+    }
+
+    const results: any[] = [];
+
+    $("li.ipc-metadata-list-summary-item.find-title-result").each((_, el) => {
+      const anchor = $(el).find("a.ipc-metadata-list-summary-item__t");
+      const title = anchor.text().trim();
+      const href = anchor.attr("href") || "";
+      const imdbIdMatch = href.match(/\/title\/(tt\d+)/);
+      const imdbId = imdbIdMatch ? imdbIdMatch[1] : null;
+
+      if (!imdbId) return;
+
+      const year =
+        $(el)
+          .find(".ipc-metadata-list-summary-item__tl li")
+          .first()
+          .text()
+          .trim() || "Unknown";
+      const cast =
+        $(el).find(".ipc-metadata-list-summary-item__stl li").text().trim() ||
+        null;
+      const image = $(el).find("img").attr("src") || null;
+
+      results.push({
+        imdbId,
+        title,
+        year,
+        image,
+        cast: cast ? cast.split(",").map((name) => name.trim()) : [],
+        url: `https://www.imdb.com/title/${imdbId}/`,
+      });
+    });
+
+    return results;
+  } catch (error: any) {
+    console.error("❌ Scraping error:", error.message);
+    return { error: error.message || "Unknown error occurred" };
+  }
+}

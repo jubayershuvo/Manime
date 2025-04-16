@@ -36,11 +36,11 @@ function Movie({ imdbId }: { imdbId: string }) {
           <p className="text-lg text-muted-foreground">
             {movie.title} ({movie.yearRange.start})
           </p>
-          <p className="text-gray-700">
+          <p className="text-gray-400">
             {movie.description || movie.fullTitle}
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-500">
             <p>
               <strong>Type:</strong> {movie.type}
             </p>
@@ -61,6 +61,9 @@ function Movie({ imdbId }: { imdbId: string }) {
               {movie.ratings?.count} ratings)
             </p>
             <p>
+              <strong>Engagement:</strong>  👤 {movie?.engagement?.watchlistCount}
+            </p>
+            <p>
               <strong>Reviews:</strong> 📝 {movie.reviews?.total}
             </p>
           </div>
@@ -75,6 +78,30 @@ function Movie({ imdbId }: { imdbId: string }) {
                 {genre}
               </span>
             ))}
+          </div>
+
+          <div className="pt-1">
+            <h2 className="text-2xl font-semibold text-gray-500 pb-2">
+              Production Companies
+            </h2>
+            {movie?.productionCompanies?.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {movie.productionCompanies.map((company: any) => (
+                  <div
+                    key={company.id}
+                    className="bg-white shadow-md rounded-lg p-2 flex flex-col items-center space-y-2"
+                  >
+                    <p className="text-lg font-medium text-gray-900">
+                      {company.name}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">
+                No production companies available.
+              </p>
+            )}
           </div>
         </div>
       </div>

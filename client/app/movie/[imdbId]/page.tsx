@@ -13,14 +13,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     cache: "no-store",
   });
   const movie = await res.json();
+  const allImages = [movie?.primaryImage?.url, ...movie.images.map((image: any) => image.url)];
+
+  console.log(allImages)
 
   return {
     title: `${movie?.title} ${movie.actors[0].name} (${movie?.yearRange?.start})` || "Loading...",
     description: movie?.description || movie?.fullTitle || "Movie info",
     openGraph: {
       title: `${movie?.title} ${movie.actors[0].name} (${movie?.yearRange?.start})`,
-      description: movie?.description,
-      images: [movie?.primaryImage?.url],
+      description: movie?.description || movie?.fullTitle || "Movie info",
+      images: allImages,
       type: "video.movie",
     },
   };

@@ -1,4 +1,4 @@
-import getMovieDetails from "@/utils/imdb";
+import { getMovieDetails } from "@/utils/imdb";
 import { NextResponse } from "next/server";
 
 export async function GET(
