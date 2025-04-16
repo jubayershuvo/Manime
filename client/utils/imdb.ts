@@ -23,19 +23,16 @@ async function getMovieDetails(imdbId: string) {
     const aboveTheFoldData = jsonData.props.pageProps.aboveTheFoldData;
     const mainColumnData = jsonData.props.pageProps.mainColumnData;
 
-    return {
-      aboveTheFoldData,
-      mainColumnData
-    };
   
     return {
       // Basic Info
       id: imdbId,
       url: `https://www.imdb.com/title/${imdbId}/`,
-      title: aboveTheFoldData.titleText?.text || "N/A",
+      title: aboveTheFoldData.titleText?.text || null,
       originalTitle: aboveTheFoldData.originalTitleText?.text || null,
-      type: aboveTheFoldData.titleType?.text || "N/A",
-      description: aboveTheFoldData.plot?.plotText?.plainText || "N/A",
+      fullTitle: aboveTheFoldData.primaryImage?.caption?.plainText || null,
+      type: aboveTheFoldData.titleType?.text || null,
+      description: aboveTheFoldData.plot?.plotText?.plainText || null,
       isAdult: aboveTheFoldData.isAdult || false,
 
       // Media
@@ -115,7 +112,7 @@ async function getMovieDetails(imdbId: string) {
           id: edge.node.name.id,
           name: edge.node.name.nameText.text,
           image: edge.node.name.primaryImage?.url,
-          character: edge.node.characters?.[0]?.name,
+          character: edge.node.characters?.[0]?.name || null,
           attributes: edge.node.attributes,
           episodeCount: edge.node.episodeCredits?.total,
         })) || [],
@@ -129,7 +126,7 @@ async function getMovieDetails(imdbId: string) {
           ?.map((edge: any) => ({
             id: edge.node.name.id,
             name: edge.node.name.nameText.text,
-            role: edge.node.characters?.[0]?.name || "Unknown",
+            role: edge.node.characters?.[0]?.name || null,
           })) || [],
 
       // Technical Specs
