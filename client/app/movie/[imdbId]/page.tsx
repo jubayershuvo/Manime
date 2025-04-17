@@ -27,6 +27,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   };
 }
 
-export default function MoviePage({ params }: Props) {
+export default function MoviePage({ params }: any) {
   return <MovieClient imdbId={params.imdbId} />;
 }
