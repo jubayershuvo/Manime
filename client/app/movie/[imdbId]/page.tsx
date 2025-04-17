@@ -2,16 +2,10 @@ import { Metadata } from "next";
 import MovieClient from "../../components/Movie"; // new file you'll create
 import { headers } from "next/headers";
 
-type Props = {
-  params: {
-    imdbId: string;
-  };
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   const headersList:any = headers();
-  const host = headersList.get("host");
-  const protocol = headersList.get("x-forwarded-proto") || "http";
+  const host = headersList?.get("host");
+  const protocol = headersList?.get("x-forwarded-proto") || "http";
   const baseUrl = `${protocol}://${host}`;
  
   const res = await fetch(`${baseUrl}/api/movie/${params.imdbId}`, {
