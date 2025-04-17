@@ -20,8 +20,18 @@ function Movie({ imdbId }: { imdbId: string }) {
       .catch((err) => console.error(err));
   }, []);
 
-  if (!movie) return <div className="p-6 text-center">Loading...</div>;
-  console.log(movie);
+  if (!movie) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-black text-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-red-500 border-opacity-50"></div>
+          <p className="text-lg font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10">
       {/* Header */}
@@ -61,7 +71,8 @@ function Movie({ imdbId }: { imdbId: string }) {
               {movie.ratings?.count} ratings)
             </p>
             <p>
-              <strong>Engagement:</strong>  👤 {movie?.engagement?.watchlistCount}
+              <strong>Engagement:</strong> 👤{" "}
+              {movie?.engagement?.watchlistCount}
             </p>
             <p>
               <strong>Reviews:</strong> 📝 {movie.reviews?.total}
@@ -138,30 +149,33 @@ function Movie({ imdbId }: { imdbId: string }) {
       <div>
         <h2 className="text-2xl font-semibold mb-4">Gallery</h2>
         <Swiper
-          modules={[Navigation, Pagination]}
-          spaceBetween={20}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          breakpoints={{
-            640: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            1024: { slidesPerView: 4 },
-          }}
-          className="rounded-lg"
-        >
-          {movie.images?.map((image: any) => (
-            <SwiperSlide key={image.id} className="rounded-xl overflow-hidden">
-              <div className="aspect-[16/9] w-full">
-                <img
-                  src={image.url}
-                  alt={image.title}
-                  className="w-full h-full object-cover rounded-xl shadow"
-                />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+    modules={[Navigation, Pagination]}
+    spaceBetween={20}
+    slidesPerView={1}
+    navigation
+    pagination={{ clickable: true }}
+    breakpoints={{
+      640: { slidesPerView: 2 },
+      768: { slidesPerView: 3 },
+      1024: { slidesPerView: 4 },
+    }}
+    className="rounded-lg"
+  >
+    {movie.images?.map((image: any) => (
+      <SwiperSlide
+        key={image.id}
+        className="h-64 flex items-center justify-center rounded-xl overflow-hidden"
+      >
+        <div className="w-full h-full flex items-center justify-center">
+          <img
+            src={image.url}
+            alt={image.title}
+            className="max-h-full max-w-full object-contain rounded-xl shadow"
+          />
+        </div>
+      </SwiperSlide>
+    ))}
+  </Swiper>
       </div>
 
       {/* Similar Titles */}

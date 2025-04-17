@@ -7,7 +7,7 @@ import {
 } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/config";
 import { useState } from "react";
-import getMovieDetails from "../utils/imdb";
+import {getMovieDetails} from "../utils/imdb";
 
 export default function Home() {
   const [email, setEmail] = useState("");

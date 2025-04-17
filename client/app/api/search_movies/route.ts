@@ -1,3 +1,4 @@
+
 import { searchMovies } from "@/utils/imdb";
 import { NextResponse } from "next/server";
 

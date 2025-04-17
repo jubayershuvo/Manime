@@ -1,6 +1,6 @@
 // components/ui/card.tsx
 import * as React from 'react';
-import { cn } from '../../lib/utils'; // Utility for merging class names (optional)
+import { cn } from '../../../lib/utils'; // Utility for merging class names (optional)
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
