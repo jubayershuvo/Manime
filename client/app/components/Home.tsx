@@ -51,7 +51,7 @@ export default function Home() {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
   const logged = !!user && !loading;
-  const [randomUsers, setRandomUsers] = useState([]);
+  const [randomUsers, setRandomUsers] = useState<any>([]);
 
   useEffect(() => {
     const usersr = async () => {
