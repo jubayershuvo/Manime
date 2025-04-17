@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import axios from "axios";
-import debounce from "lodash.debounce";
 
 // Navigation links
 const navLinks = [
@@ -25,6 +24,7 @@ type Movie = {
 type SearchBoxProps = {
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
+  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   filteredMovies: Movie[];
   loading: boolean;
 };
@@ -34,6 +34,7 @@ const SearchBox = ({
   setQuery,
   filteredMovies,
   loading,
+  setMenuOpen,
 }: SearchBoxProps) => {
   return (
     <div className="relative w-full md:w-72">
@@ -55,7 +56,10 @@ const SearchBox = ({
               <Link
                 href={`/movie/${movie.imdbId}`}
                 key={movie.imdbId}
-                onClick={() => setQuery("")}
+                onClick={() => {
+                  setQuery("");
+                  setMenuOpen(false);
+                }}
                 className="flex gap-3 bg-gray-200 items-center px-4 py-2 hover:bg-gray-100 border-b"
               >
                 <img
@@ -70,7 +74,9 @@ const SearchBox = ({
               </Link>
             ))
           ) : (
-            <p className="px-4 py-3 text-sm text-gray-600">{loading ? "Searching..." : "No results found"}</p>
+            <p className="px-4 py-3 text-sm text-gray-600">
+              {loading ? "Searching..." : "No results found"}
+            </p>
           )}
         </div>
       )}
@@ -81,37 +87,38 @@ const SearchBox = ({
 // Main Navbar Component
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
-const [query, setQuery] = useState("");
-const [loading, setLoading] = useState(false);
+  const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
 
-const lastQueryRef = useRef("");
-const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastQueryRef = useRef("");
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-useEffect(() => {
-  if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-  timeoutRef.current = setTimeout(async () => {
-    const trimmedQuery = query.trim();
-    if (trimmedQuery.length < 2 || trimmedQuery === lastQueryRef.current) return;
-
-    setLoading(true);
-    try {
-      const res = await axios.get(`/api/search_movies?title=${trimmedQuery}`);
-      setFilteredMovies(res.data);
-      lastQueryRef.current = trimmedQuery;
-    } catch (error) {
-      console.error("Search failed:", error);
-      setFilteredMovies([]);
-    } finally {
-      setLoading(false);
-    }
-  }, 1000); // ⏱ Wait 1 second before firing
-
-  return () => {
+  useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-  };
-}, [query]);
+
+    timeoutRef.current = setTimeout(async () => {
+      const trimmedQuery = query.trim();
+      if (trimmedQuery.length < 1 || trimmedQuery === lastQueryRef.current)
+        return setFilteredMovies([]);
+
+      setLoading(true);
+      try {
+        const res = await axios.get(`/api/search_movies?title=${trimmedQuery}`);
+        setFilteredMovies(res.data);
+        lastQueryRef.current = trimmedQuery;
+      } catch (error) {
+        console.error("Search failed:", error);
+        setFilteredMovies([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 1000); // ⏱ Wait 1 second before firing
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [query]);
 
   return (
     <header className="bg-black text-white shadow-md sticky top-0 z-50">
@@ -122,7 +129,10 @@ useEffect(() => {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-8 items-center" aria-label="Main navigation">
+        <nav
+          className="hidden md:flex gap-8 items-center"
+          aria-label="Main navigation"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -139,6 +149,7 @@ useEffect(() => {
           <SearchBox
             query={query}
             setQuery={setQuery}
+            setMenuOpen={setMenuOpen}
             filteredMovies={filteredMovies}
             loading={loading}
           />
@@ -161,11 +172,15 @@ useEffect(() => {
             <SearchBox
               query={query}
               setQuery={setQuery}
+              setMenuOpen={setMenuOpen}
               filteredMovies={filteredMovies}
               loading={loading}
             />
           </div>
-          <nav className="flex flex-col gap-4 mt-4" aria-label="Mobile navigation">
+          <nav
+            className="flex flex-col gap-4 mt-4"
+            aria-label="Mobile navigation"
+          >
             {navLinks.map((link) => (
               <Link
                 key={link.name}
