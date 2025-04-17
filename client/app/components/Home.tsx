@@ -49,7 +49,7 @@ const trending = [
 
 export default function Home() {
   const router = useRouter();
-  const [user, loading] = useAuthState(auth);
+  const [user, loading, error]: [any, boolean, any] = useAuthState(auth);
   const logged = !!user && !loading;
   const [randomUsers, setRandomUsers] = useState<any>([]);
 
