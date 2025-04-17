@@ -1,4 +1,4 @@
-"use client";
+import { FaTwitter, FaGithub, FaFacebook } from "react-icons/fa";
 import React from "react";
 
 function Footer() {
@@ -9,20 +9,27 @@ function Footer() {
         <a
           href="https://github.com/jubayershuvo"
           target="_blank"
-          className="hover:text-red-500"
+          className="hover:text-red-500 flex items-center"
         >
-          GitHub
+          <FaGithub size={25} className="mr-1" />
+        </a>
+        <a
+          href="https://facebook.com/jubayershuvo.fb"
+          target="_blank"
+          className="hover:text-blue-500 flex items-center"
+        >
+          <FaFacebook size={25} className="mr-1" />
         </a>
         <a
           href="https://twitter.com/jubayer_shuvo"
           target="_blank"
-          className="hover:text-red-500"
+          className="hover:text-blue-400 flex items-center"
         >
-          Twitter
+          <FaTwitter size={25} className="mr-1" />
         </a>
-        <a href="/privacy" className="hover:text-red-500">
+        <p className="hover:text-red-500 text-xl">
           Privacy
-        </a>
+        </p>
       </div>
     </footer>
   );

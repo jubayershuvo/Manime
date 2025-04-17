@@ -1,35 +1,42 @@
-'use client';
-import { auth } from '@/firebase/config';
-import { useSignInWithGoogle, useAuthState } from 'react-firebase-hooks/auth';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Metadata } from "next";
+import { headers } from "next/headers";
+import LoginPage from "../components/Login";
 
-export default function LoginPage() {
-  const router = useRouter();
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers(); // ✅ await the function
+  const host = headersList.get("host");
+  const protocol = headersList.get("x-forwarded-proto") || "http";
+  const baseUrl = `${protocol}://${host}`;
+  return {
+    title: "Manime | Login & Register",
+    description:
+      "Discover and download your favorite movies and anime. Detailed info, cast, trailers, and more — all in one place with Manime.",
+    keywords: [
+      "Manime",
+      "anime info",
+      "movie info",
+      "anime download",
+      "anime download link",
+      "movie download",
+      "movie download link",
+      "watch anime",
+      "watch movies",
+      "free movies",
+      "anime cast",
+      "movie trailers",
+    ],
+    authors: [{ name: "Md Jubayer", url: "https://github.com/jubayershuvo" }],
+    creator: "Md Jubayer",
+    metadataBase: new URL(baseUrl),
+    category: "entertainment",
+    robots: {
+      index: true,
+      follow: true,
+      nocache: false,
+    },
+  };
+}
 
-  const [signInWithGoogle, _user, loading, error] = useSignInWithGoogle(auth);
-  const [user] = useAuthState(auth);
-  console.log(user)
-
-  useEffect(() => {
-    if (user) {
-      router.push('/'); // Redirect to homepage or dashboard
-    }
-  }, [user, router]);
-
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-3xl font-bold mb-6">Login with Google</h1>
-
-      <button
-        onClick={() => signInWithGoogle()}
-        className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded font-semibold"
-      >
-        Sign in with Google
-      </button>
-
-      {loading && <p className="mt-4">Loading...</p>}
-      {error && <p className="mt-4 text-red-500">{error.message}</p>}
-    </div>
-  );
+export default function Login() {
+  return <LoginPage />;
 }

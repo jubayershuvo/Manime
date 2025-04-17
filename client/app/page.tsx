@@ -53,7 +53,6 @@ export async function generateMetadata(): Promise<Metadata> {
       images: ["/og-image.jpg"], // Same Open Graph image
       creator: "@jubayer_shuvo", // Optional
     },
-    themeColor: "#111111",
     category: "entertainment",
     robots: {
       index: true,

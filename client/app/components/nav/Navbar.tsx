@@ -3,14 +3,10 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import axios from "axios";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/config";
 
 // Navigation links
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "Movies", href: "/movies" },
-  { name: "Genres", href: "/genres" },
-  { name: "About", href: "/about" },
-];
 
 // SearchBox Component
 type Movie = {
@@ -90,9 +86,24 @@ const Navbar = () => {
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [user, authloading, error]: [any, boolean, any] = useAuthState(auth);
+  const logged = !!user && !loading;
 
   const lastQueryRef = useRef("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+
+  const navLinks = logged
+    ? [
+        { name: "Home", href: "/" },
+        { name: "Watchlist", href: "/watchlist" },
+        { name: "Profile", href: "/profile" },
+      ]
+    : [
+        { name: "Home", href: "/" },
+        { name: "Login", href: "/login" },
+        { name: "Register", href: "/register" },
+      ];
 
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);

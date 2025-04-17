@@ -87,7 +87,7 @@ export default function Home() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.5 }}
         >
-          <Link href="/login">
+          <div>
             {logged ? (
               <button
                 className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded font-semibold flex items-center"
@@ -103,7 +103,7 @@ export default function Home() {
                 Login <FaArrowRight className="ml-2" />
               </button>
             )}
-          </Link>
+          </div>
         </motion.div>
       </section>
 
