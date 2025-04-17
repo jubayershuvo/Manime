@@ -1,10 +1,31 @@
-'use client'
-import React from 'react'
+"use client";
+import React from "react";
 
 function Footer() {
   return (
-    <div>Footer</div>
-  )
+    <footer className="px-6 py-10 bg-black text-center text-gray-400 text-sm">
+      <p>© {new Date().getFullYear()} Manime. Built with ❤️ by Md Jubayer.</p>
+      <div className="mt-3 flex justify-center gap-4 text-white">
+        <a
+          href="https://github.com/jubayershuvo"
+          target="_blank"
+          className="hover:text-red-500"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://twitter.com/jubayer_shuvo"
+          target="_blank"
+          className="hover:text-red-500"
+        >
+          Twitter
+        </a>
+        <a href="/privacy" className="hover:text-red-500">
+          Privacy
+        </a>
+      </div>
+    </footer>
+  );
 }
 
-export default Footer
+export default Footer;

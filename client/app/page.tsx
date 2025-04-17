@@ -3,7 +3,7 @@ import HomePage from "@/app/components/Home";
 import { headers } from "next/headers";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const headersList:any = headers();
+  const headersList = await headers(); // ✅ await the function
   const host = headersList.get("host");
   const protocol = headersList.get("x-forwarded-proto") || "http";
   const baseUrl = `${protocol}://${host}`;

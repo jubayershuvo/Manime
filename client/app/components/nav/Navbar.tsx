@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import axios from "axios";
@@ -81,31 +81,37 @@ const SearchBox = ({
 // Main Navbar Component
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
+const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
+const [query, setQuery] = useState("");
+const [loading, setLoading] = useState(false);
 
-  const searchMovies = debounce(async (title: string) => {
-    if (title.trim().length < 2) {
-      setFilteredMovies([]);
-      return;
-    }
+const lastQueryRef = useRef("");
+const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+useEffect(() => {
+  if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+  timeoutRef.current = setTimeout(async () => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length < 2 || trimmedQuery === lastQueryRef.current) return;
 
     setLoading(true);
     try {
-      const res = await axios.get(`/api/search_movies?title=${title}`);
+      const res = await axios.get(`/api/search_movies?title=${trimmedQuery}`);
       setFilteredMovies(res.data);
+      lastQueryRef.current = trimmedQuery;
     } catch (error) {
       console.error("Search failed:", error);
       setFilteredMovies([]);
     } finally {
       setLoading(false);
     }
-  }, 500);
+  }, 1000); // ⏱ Wait 1 second before firing
 
-  useEffect(() => {
-    searchMovies(query);
-  }, [query]);
+  return () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  };
+}, [query]);
 
   return (
     <header className="bg-black text-white shadow-md sticky top-0 z-50">

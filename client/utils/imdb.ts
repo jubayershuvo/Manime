@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { getImageUrl } from "./wikipediaImage";
 
 export async function getMovieDetails(imdbId: string) {
   const baseUrl = "https://www.imdb.com/title";
@@ -54,9 +55,9 @@ export async function getMovieDetails(imdbId: string) {
       // Release Info
       releaseDate: aboveTheFoldData.releaseDate?.day
         ? new Date(
-            aboveTheFoldData.releaseDate.year,
-            aboveTheFoldData.releaseDate.month - 1,
-            aboveTheFoldData.releaseDate.day
+            aboveTheFoldData.releaseDate?.year,
+            aboveTheFoldData.releaseDate?.month - 1,
+            aboveTheFoldData.releaseDate?.day
           ).toISOString()
         : null,
       yearRange: {
@@ -209,7 +210,7 @@ export async function getMovieDetails(imdbId: string) {
           id: edge.node.id,
           title: edge.node.titleText.text,
           type: edge.node.titleType.text,
-          year: edge.node.releaseYear.year,
+          year: edge.node.releaseYear?.year,
           rating: edge.node.ratingsSummary?.aggregateRating,
           image: edge.node.primaryImage?.url,
         })) || [],
