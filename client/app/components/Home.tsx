@@ -180,7 +180,7 @@ export default function Home() {
       <section className="px-6 py-20 bg-[#111] text-center">
         <h2 className="text-3xl font-bold mb-10">What Our Users Say</h2>
         <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-          {randomUsers.map((user, idx) => (
+          {randomUsers.map((user: { name: string; photo: string; comment: string }, idx: number) => (
             <motion.div
               key={idx}
               className="bg-[#1f1f1f] p-6 rounded-xl shadow-md flex flex-col items-center"
