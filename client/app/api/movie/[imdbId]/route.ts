@@ -1,12 +1,8 @@
-
 import { getMovieDetails } from "@/utils/imdb";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  _req: NextRequest,
-  context: { params: { imdbId: string } }
-) {
-  const { imdbId } = context?.params;
+export async function GET(req: NextRequest) {
+  const imdbId = req.nextUrl.pathname.split("/").pop(); // or use searchParams if passing as query
 
   if (!imdbId) {
     return NextResponse.json({ error: "Missing IMDb ID" }, { status: 400 });
