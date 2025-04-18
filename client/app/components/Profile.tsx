@@ -33,11 +33,11 @@ function Profile() {
     <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl shadow-md bg-white">
       <div className="flex flex-col items-center gap-4">
         <img
-          src={user.photoURL || "https://via.placeholder.com/100"}
+          src={user.photoURL || "https://cdn.vectorstock.com/i/preview-1x/96/43/avatar-photo-default-user-icon-picture-face-vector-48139643.webp"}
           alt="User avatar"
           className="w-24 h-24 rounded-full object-cover"
         />
-        <h2 className="text-2xl font-semibold">
+        <h2 className="text-2xl font-semibold text-gray-950">
           {user.displayName || "No Name"}
         </h2>
         <p className="text-gray-600">{user.email}</p>
