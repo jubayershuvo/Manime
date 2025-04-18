@@ -96,13 +96,11 @@ const Navbar = () => {
   const navLinks = logged
     ? [
         { name: "Home", href: "/" },
-        { name: "Watchlist", href: "/watchlist" },
         { name: "Profile", href: "/profile" },
       ]
     : [
         { name: "Home", href: "/" },
         { name: "Login", href: "/login" },
-        { name: "Register", href: "/register" },
       ];
 
   useEffect(() => {
