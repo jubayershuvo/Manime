@@ -92,7 +92,6 @@ const Navbar = () => {
   const lastQueryRef = useRef("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-
   const navLinks = logged
     ? [
         { name: "Home", href: "/" },
@@ -115,6 +114,7 @@ const Navbar = () => {
       try {
         const res = await axios.get(`/api/search_movies?title=${trimmedQuery}`);
         setFilteredMovies(res.data);
+
         lastQueryRef.current = trimmedQuery;
       } catch (error) {
         console.error("Search failed:", error);

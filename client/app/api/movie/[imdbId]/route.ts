@@ -9,7 +9,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const data = await getMovieDetails(imdbId);
+    const data: any = await getMovieDetails(imdbId);
+    
+
     return NextResponse.json(data, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(

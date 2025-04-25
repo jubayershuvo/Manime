@@ -11,8 +11,9 @@ export async function GET(req: Request) {
   }
 
   try {
-    const data = await searchMovies(title);
-    return NextResponse.json(data, { status: 200 });
+    const data: any = await searchMovies(title);
+    const sendData = data.filter((item: any) => item.image);
+    return NextResponse.json(sendData, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Unknown error" }, { status: 500 });
   }
