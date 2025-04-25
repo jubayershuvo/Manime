@@ -2,6 +2,29 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import { getImageUrl } from "./wikipediaImage";
 
+const getActorsWithImages = async (mainColumnData: any) => {
+  // Create an array of promises to fetch actor data and images
+  const actorPromises =
+    mainColumnData.cast?.edges
+      ?.filter(
+        (edge: any) =>
+          edge.node.category?.id === "actor" ||
+          edge.node.category?.id === "actress"
+      )
+      ?.map(async (edge: any) => {
+        // Return a promise to fetch image and actor data
+        return getImageUrl(edge.node.name.nameText.text).then((res) => ({
+          id: edge.node.name.id,
+          name: edge.node.name.nameText.text,
+          role: edge.node.characters?.[0]?.name || null,
+          image: res.image, // Image from the promise response
+        }));
+      }) || [];
+
+  // Wait for all promises to resolve and return the data
+  return Promise.all(actorPromises);
+};
+
 export async function getMovieDetails(imdbId: string) {
   const baseUrl = "https://www.imdb.com/title";
   try {
@@ -101,23 +124,23 @@ export async function getMovieDetails(imdbId: string) {
             image: person.name.primaryImage?.url,
           })
         ) || [],
-      writers:
-        aboveTheFoldData.writers?.map((writer: any) => ({
-          id: writer.name.id,
-          name: writer.name.nameText.text,
-          category: writer.category?.text,
-        })) || [],
+      // writers:
+      //   aboveTheFoldData.writers?.map((writer: any) => ({
+      //     id: writer.name.id,
+      //     name: writer.name.nameText.text,
+      //     category: writer.category?.text,
+      //   })) || [],
 
       // Cast & Crew
-      cast:
-        mainColumnData.cast?.edges?.map((edge: any) => ({
-          id: edge.node.name.id,
-          name: edge.node.name.nameText.text,
-          image: edge.node.name.primaryImage?.url,
-          character: edge.node.characters?.[0]?.name || null,
-          attributes: edge.node.attributes,
-          episodeCount: edge.node.episodeCredits?.total,
-        })) || [],
+      // cast:
+      //   mainColumnData.cast?.edges?.map((edge: any) => ({
+      //     id: edge.node.name.id,
+      //     name: edge.node.name.nameText.text,
+      //     image: edge.node.name.primaryImage?.url,
+      //     character: edge.node.characters?.[0]?.name || null,
+      //     attributes: edge.node.attributes,
+      //     episodeCount: edge.node.episodeCredits?.total,
+      //   })) || [],
       actors:
         mainColumnData.cast?.edges
           ?.filter(
@@ -130,6 +153,7 @@ export async function getMovieDetails(imdbId: string) {
             name: edge.node.name.nameText.text,
             role: edge.node.characters?.[0]?.name || null,
           })) || [],
+      // actors: await getActorsWithImages(mainColumnData),
 
       // Technical Specs
       runtime: {
